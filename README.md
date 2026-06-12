@@ -139,6 +139,61 @@ uvicorn app.main:app --host 0.0.0.0 --port 8765
 
 ---
 
+## Deploying to Render
+
+[Render](https://render.com) is a managed cloud platform that can run the server for free with zero infrastructure setup.
+
+### Prerequisites — font files
+
+Render deploys directly from the repository, so the Hebrew font `.ttf` files and `sleeping.png` must be committed to the repo root before deploying. Add the files you want to use (any subset is fine; the server falls back gracefully):
+
+```
+NotoSansHebrew-Bold.ttf   ← recommended minimum
+Heebo-Bold.ttf
+FrankRuhlLibre-Bold.ttf
+FrankRuhlLibre.ttf
+DavidLibre-Bold.ttf
+sleeping.png
+```
+
+### Option A — one-click deploy (render.yaml)
+
+The repo includes a `render.yaml` blueprint. Click the button below, connect your GitHub account, and Render will pre-fill all settings:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+### Option B — manual setup
+
+1. Log in to [render.com](https://render.com) and click **New → Web Service**.
+2. Connect your GitHub account and select the `hebrew-clock` repository.
+3. Fill in the service settings:
+
+   | Field | Value |
+   |-------|-------|
+   | **Name** | `hebrew-clock` (or any name you like) |
+   | **Runtime** | `Python 3` |
+   | **Build Command** | `pip install -r requirements.txt` |
+   | **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+
+4. Under **Environment Variables**, add:
+
+   | Key | Value | Notes |
+   |-----|-------|-------|
+   | `FONT_DIR` | `.` | Repo root — where the `.ttf` files live |
+   | `DISPLAY_LAG` | `8` | Seconds ahead to render (adjust to match your display's refresh time) |
+   | `LOG_LEVEL` | `info` | |
+
+5. Set the **Health Check Path** to `/health`.
+6. Click **Create Web Service**. Render will build and deploy; the service URL appears in the dashboard.
+
+### Pointing the ESP32 at Render
+
+Once the service is live, copy its URL from the Render dashboard (e.g. `https://hebrew-clock.onrender.com`) and paste it into the **Image URL** field in the [ePaper config UI](epaper.md).
+
+> **Free-tier note:** Render's free plan spins down a service after 15 minutes of inactivity. Because the ESP32 fetches an image every 60 seconds, the service stays warm continuously during normal use.
+
+---
+
 ## ESP32 Firmware
 
 See **[epaper.md](epaper.md)** for full instructions on:
