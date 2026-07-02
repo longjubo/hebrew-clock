@@ -191,7 +191,7 @@ def _draw_analog_clock(draw: ImageDraw.Draw, cx: int, cy: int, r: int,
     num_font = get_font(max(12, r // 4), font_name)
     for num, deg in ((12, -90), (3, 0), (6, 90), (9, 180)):
         angle = math.radians(deg)
-        draw.text((cx + (r - 18) * math.cos(angle), cy + (r - 18) * math.sin(angle)),
+        draw.text((cx + (r - 18) * math.cos(angle), cy + (r - 18) * math.sin(angle), direction='rtl'),
                   str(num), font=num_font, fill=0, anchor="mm")
     h12 = h24 % 12
     hour_angle = math.radians((h12 + m / 60) * 30 - 90)
